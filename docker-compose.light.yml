@@ -3,7 +3,7 @@ services:
   # PostgreSQL (Primary only)
   # =========================
   fastapi-postgres-primary:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     container_name: fastapi-postgres-primary3
     environment:
       POSTGRES_USER: user

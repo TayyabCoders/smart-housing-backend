@@ -2,6 +2,14 @@ from typing import Any
 
 from app.models.user_model import User
 from app.models.base_model import Base
+from app.models.camera import Camera
+from app.models.vehicle import Vehicle
+from app.models.vehicle_detection import VehicleDetection
+from app.models.person import Person
+from app.models.face_embedding import FaceEmbedding
+from app.models.face_detection import FaceDetection
+from app.models.alert import Alert
+from app.models.visitor_approval import VisitorApproval
 
 
 async def initialize_models(database: Any) -> None:
@@ -20,4 +28,15 @@ async def initialize_models(database: Any) -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-__all__ = ["User", "initialize_models"]
+__all__ = [
+    "User",
+    "Camera",
+    "Vehicle",
+    "VehicleDetection",
+    "Person",
+    "FaceEmbedding",
+    "FaceDetection",
+    "Alert",
+    "VisitorApproval",
+    "initialize_models",
+]
