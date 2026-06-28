@@ -61,3 +61,15 @@ class VisitorApprovalStatus(str, enum.Enum):
     PENDING = "pending"
     APPROVED = "approved"
     DENIED = "denied"
+
+
+class ComplaintGender(str, enum.Enum):
+    male = "male"
+    female = "female"
+
+
+class ComplaintStatus(str, enum.Enum):
+    Pending = "Pending"
+    In_Progress = "In_Progress"
+    Resolved = "Resolved"
+    Rejected = "Rejected"

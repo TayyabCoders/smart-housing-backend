@@ -54,13 +54,6 @@ async def get_current_user(
         async def protected_route(current_user: User = Depends(get_current_user)):
             return {"user": current_user.email}
     """
-    # Check if route is public
-    if is_public_route(request.url.path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="get_current_user should not be called on public routes"
-        )
-    
     # Check for credentials
     if not credentials:
         logger.warning(
@@ -70,7 +63,7 @@ async def get_current_user(
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authorization header",
+            detail="Authentication required. Please provide a valid token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     

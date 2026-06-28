@@ -35,6 +35,11 @@ from app.schemas.camera_schema import (
     CameraCreateRequest,
     CameraUpdateRequest,
 )
+from app.schemas.complaint_schema import (
+    Complaint,
+    ComplaintCreate,
+    ComplaintUpdate,
+)
 
 __all__ = [
     # Common
@@ -71,4 +76,8 @@ __all__ = [
     "CameraResponse",
     "CameraCreateRequest",
     "CameraUpdateRequest",
+    # Complaints
+    "Complaint",
+    "ComplaintCreate",
+    "ComplaintUpdate",
 ]

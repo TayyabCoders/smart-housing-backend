@@ -10,6 +10,7 @@ from app.models.face_embedding import FaceEmbedding
 from app.models.face_detection import FaceDetection
 from app.models.alert import Alert
 from app.models.visitor_approval import VisitorApproval
+from app.models.complaint_model import Complaint
 
 
 async def initialize_models(database: Any) -> None:
@@ -38,5 +39,6 @@ __all__ = [
     "FaceDetection",
     "Alert",
     "VisitorApproval",
+    "Complaint",
     "initialize_models",
 ]
