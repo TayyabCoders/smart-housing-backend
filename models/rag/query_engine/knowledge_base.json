@@ -1,0 +1,591 @@
+{
+  "knowledge_base": {
+    "name": "Smart Society Knowledge Base",
+    "collection": "pro_rag_collection",
+    "embed_model": "BAAI/bge-small-en-v1.5",
+    "categories": [
+      {
+        "name": "Administrative & Legal",
+        "document_count": 10,
+        "documents": [
+          {
+            "filename": "Dispute_Resolution.md",
+            "path": "data/Smart Scociety/Administrative & Legal/Dispute_Resolution.md",
+            "topic": "Dispute Resolution",
+            "type": "markdown"
+          },
+          {
+            "filename": "Property Transfer_&_Ownership.md",
+            "path": "data/Smart Scociety/Administrative & Legal/Property Transfer_&_Ownership.md",
+            "topic": "Property Transfer and Ownership",
+            "type": "markdown"
+          },
+          {
+            "filename": "Relocation_Policy.md",
+            "path": "data/Smart Scociety/Administrative & Legal/Relocation_Policy.md",
+            "topic": "Relocation Policy",
+            "type": "markdown"
+          },
+          {
+            "filename": "Society_Elections_Admin.md",
+            "path": "data/Smart Scociety/Administrative & Legal/Society_Elections_Admin.md",
+            "topic": "Society Elections Admin",
+            "type": "markdown"
+          },
+          {
+            "filename": "Dispute_Resolution.md",
+            "path": "data/Smart Society/Administrative & Legal/Dispute_Resolution.md",
+            "topic": "Dispute Resolution",
+            "type": "md"
+          },
+          {
+            "filename": "NOC_&_Permissions.md",
+            "path": "data/Smart Society/Administrative & Legal/NOC_&_Permissions.md",
+            "topic": "NOC & Permissions",
+            "type": "md"
+          },
+          {
+            "filename": "Property Transfer_&_Ownership.md",
+            "path": "data/Smart Society/Administrative & Legal/Property Transfer_&_Ownership.md",
+            "topic": "Property Transfer & Ownership",
+            "type": "md"
+          },
+          {
+            "filename": "Relocation_Policy.md",
+            "path": "data/Smart Society/Administrative & Legal/Relocation_Policy.md",
+            "topic": "Relocation Policy",
+            "type": "md"
+          },
+          {
+            "filename": "Society_Elections_Admin.md",
+            "path": "data/Smart Society/Administrative & Legal/Society_Elections_Admin.md",
+            "topic": "Society Elections Admin",
+            "type": "md"
+          },
+          {
+            "filename": "Visitor_Registration_Policy.md",
+            "path": "data/Smart Society/Administrative & Legal/Visitor_Registration_Policy.md",
+            "topic": "Visitor Registration Policy",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Archive & Future Developments",
+        "document_count": 6,
+        "documents": [
+          {
+            "filename": "Newsletter_2026.md",
+            "path": "data/Smart Scociety/Archive & Future Developments/Newsletter_2026.md",
+            "topic": "Newsletter 2026",
+            "type": "markdown"
+          },
+          {
+            "filename": "Upcoming_Projects.md",
+            "path": "data/Smart Scociety/Archive & Future Developments/Upcoming_Projects.md",
+            "topic": "Upcoming Projects",
+            "type": "markdown"
+          },
+          {
+            "filename": "Annual_Report_2025.md",
+            "path": "data/Smart Society/Archive & Future Developments/Annual_Report_2025.md",
+            "topic": "Annual Report 2025",
+            "type": "md"
+          },
+          {
+            "filename": "Historical_Society_Milestones.md",
+            "path": "data/Smart Society/Archive & Future Developments/Historical_Society_Milestones.md",
+            "topic": "Historical Society Milestones",
+            "type": "md"
+          },
+          {
+            "filename": "Newsletter_2026.md",
+            "path": "data/Smart Society/Archive & Future Developments/Newsletter_2026.md",
+            "topic": "Newsletter 2026",
+            "type": "md"
+          },
+          {
+            "filename": "Upcoming_Projects.md",
+            "path": "data/Smart Society/Archive & Future Developments/Upcoming_Projects.md",
+            "topic": "Upcoming Projects",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Community & Lifestyle",
+        "document_count": 28,
+        "documents": [
+          {
+            "filename": "Co-working_Space_&_Business_Center.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Co-working_Space_&_Business_Center.md",
+            "topic": "Co working Space and Business Center",
+            "type": "markdown"
+          },
+          {
+            "filename": "Community_Kitchen_&_Bakery.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Community_Kitchen_&_Bakery.md",
+            "topic": "Community Kitchen and Bakery",
+            "type": "markdown"
+          },
+          {
+            "filename": "Essential Contact Directory.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Essential Contact Directory.md",
+            "topic": "Essential Contact Directory",
+            "type": "markdown"
+          },
+          {
+            "filename": "Guest_House_&_Lodging.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Guest_House_&_Lodging.md",
+            "topic": "Guest House and Lodging",
+            "type": "markdown"
+          },
+          {
+            "filename": "Internal_Shuttle_Service.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Internal_Shuttle_Service.md",
+            "topic": "Internal Shuttle Service",
+            "type": "markdown"
+          },
+          {
+            "filename": "Multi-Faith_Prayer_Rooms.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Multi-Faith_Prayer_Rooms.md",
+            "topic": "Multi Faith Prayer Rooms",
+            "type": "markdown"
+          },
+          {
+            "filename": "Outdoor_Cinema_&_Amphitheater.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Outdoor_Cinema_&_Amphitheater.md",
+            "topic": "Outdoor Cinema and Amphitheater",
+            "type": "markdown"
+          },
+          {
+            "filename": "Pet_Grooming_&_Day-Boarding.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Pet_Grooming_&_Day-Boarding.md",
+            "topic": "Pet Grooming and Day Boarding",
+            "type": "markdown"
+          },
+          {
+            "filename": "Senior_Citizen_Lounge.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Senior_Citizen_Lounge.md",
+            "topic": "Senior Citizen Lounge",
+            "type": "markdown"
+          },
+          {
+            "filename": "Smart_Parcel_Lockers.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Smart_Parcel_Lockers.md",
+            "topic": "Smart Parcel Lockers",
+            "type": "markdown"
+          },
+          {
+            "filename": "utility_services.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/utility_services.md",
+            "topic": "utility services",
+            "type": "markdown"
+          },
+          {
+            "filename": "Waste_Management.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Waste_Management.md",
+            "topic": "Waste Management",
+            "type": "markdown"
+          },
+          {
+            "filename": "Waste_Recycling_Center.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Waste_Recycling_Center.md",
+            "topic": "Waste Recycling Center",
+            "type": "markdown"
+          },
+          {
+            "filename": "Water_Management_Policy.md",
+            "path": "data/Smart Scociety/Community & Lifestyle/Water_Management_Policy.md",
+            "topic": "Water Management Policy",
+            "type": "markdown"
+          },
+          {
+            "filename": "Co-working_Space_&_Business_Center.md",
+            "path": "data/Smart Society/Community & Lifestyle/Co-working_Space_&_Business_Center.md",
+            "topic": "Co working Space & Business Center",
+            "type": "md"
+          },
+          {
+            "filename": "Community_Kitchen_&_Bakery.md",
+            "path": "data/Smart Society/Community & Lifestyle/Community_Kitchen_&_Bakery.md",
+            "topic": "Community Kitchen & Bakery",
+            "type": "md"
+          },
+          {
+            "filename": "Essential Contact Directory.md",
+            "path": "data/Smart Society/Community & Lifestyle/Essential Contact Directory.md",
+            "topic": "Essential Contact Directory",
+            "type": "md"
+          },
+          {
+            "filename": "Guest_House_&_Lodging.md",
+            "path": "data/Smart Society/Community & Lifestyle/Guest_House_&_Lodging.md",
+            "topic": "Guest House & Lodging",
+            "type": "md"
+          },
+          {
+            "filename": "Internal_Shuttle_Service.md",
+            "path": "data/Smart Society/Community & Lifestyle/Internal_Shuttle_Service.md",
+            "topic": "Internal Shuttle Service",
+            "type": "md"
+          },
+          {
+            "filename": "Multi-Faith_Prayer_Rooms.md",
+            "path": "data/Smart Society/Community & Lifestyle/Multi-Faith_Prayer_Rooms.md",
+            "topic": "Multi Faith Prayer Rooms",
+            "type": "md"
+          },
+          {
+            "filename": "Outdoor_Cinema_&_Amphitheater.md",
+            "path": "data/Smart Society/Community & Lifestyle/Outdoor_Cinema_&_Amphitheater.md",
+            "topic": "Outdoor Cinema & Amphitheater",
+            "type": "md"
+          },
+          {
+            "filename": "Pet_Grooming_&_Day-Boarding.md",
+            "path": "data/Smart Society/Community & Lifestyle/Pet_Grooming_&_Day-Boarding.md",
+            "topic": "Pet Grooming & Day Boarding",
+            "type": "md"
+          },
+          {
+            "filename": "Senior_Citizen_Lounge.md",
+            "path": "data/Smart Society/Community & Lifestyle/Senior_Citizen_Lounge.md",
+            "topic": "Senior Citizen Lounge",
+            "type": "md"
+          },
+          {
+            "filename": "Smart_Parcel_Lockers.md",
+            "path": "data/Smart Society/Community & Lifestyle/Smart_Parcel_Lockers.md",
+            "topic": "Smart Parcel Lockers",
+            "type": "md"
+          },
+          {
+            "filename": "utility_services.md",
+            "path": "data/Smart Society/Community & Lifestyle/utility_services.md",
+            "topic": "utility services",
+            "type": "md"
+          },
+          {
+            "filename": "Waste_Management.md",
+            "path": "data/Smart Society/Community & Lifestyle/Waste_Management.md",
+            "topic": "Waste Management",
+            "type": "md"
+          },
+          {
+            "filename": "Waste_Recycling_Center.md",
+            "path": "data/Smart Society/Community & Lifestyle/Waste_Recycling_Center.md",
+            "topic": "Waste Recycling Center",
+            "type": "md"
+          },
+          {
+            "filename": "Water_Management_Policy.md",
+            "path": "data/Smart Society/Community & Lifestyle/Water_Management_Policy.md",
+            "topic": "Water Management Policy",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Digital Services & Smart App",
+        "document_count": 7,
+        "documents": [
+          {
+            "filename": "App_Troubleshooting.md",
+            "path": "data/Smart Scociety/Digital Services & Smart App/App_Troubleshooting.md",
+            "topic": "App Troubleshooting",
+            "type": "markdown"
+          },
+          {
+            "filename": "Visitor_QR_System.md",
+            "path": "data/Smart Scociety/Digital Services & Smart App/Visitor_QR_System.md",
+            "topic": "Visitor QR System",
+            "type": "markdown"
+          },
+          {
+            "filename": "App_Troubleshooting.md",
+            "path": "data/Smart Society/Digital Services & Smart App/App_Troubleshooting.md",
+            "topic": "App Troubleshooting",
+            "type": "md"
+          },
+          {
+            "filename": "CCTV_&_Surveillance_Policy.md",
+            "path": "data/Smart Society/Digital Services & Smart App/CCTV_&_Surveillance_Policy.md",
+            "topic": "CCTV & Surveillance Policy",
+            "type": "md"
+          },
+          {
+            "filename": "Online_Portal_Guide.md",
+            "path": "data/Smart Society/Digital Services & Smart App/Online_Portal_Guide.md",
+            "topic": "Online Portal Guide",
+            "type": "md"
+          },
+          {
+            "filename": "Smart_Home_Integration.md",
+            "path": "data/Smart Society/Digital Services & Smart App/Smart_Home_Integration.md",
+            "topic": "Smart Home Integration",
+            "type": "md"
+          },
+          {
+            "filename": "Visitor_QR_System.md",
+            "path": "data/Smart Society/Digital Services & Smart App/Visitor_QR_System.md",
+            "topic": "Visitor QR System",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Financials & Accounts",
+        "document_count": 6,
+        "documents": [
+          {
+            "filename": "Property_Tax_Guide.md",
+            "path": "data/Smart Scociety/Financials & Accounts/Property_Tax_Guide.md",
+            "topic": "Property Tax Guide",
+            "type": "markdown"
+          },
+          {
+            "filename": "Surcharge_&_Arrears_Policy.md",
+            "path": "data/Smart Scociety/Financials & Accounts/Surcharge_&_Arrears_Policy.md",
+            "topic": "Surcharge and Arrears Policy",
+            "type": "markdown"
+          },
+          {
+            "filename": "Budget_Transparency_Report.md",
+            "path": "data/Smart Society/Financials & Accounts/Budget_Transparency_Report.md",
+            "topic": "Budget Transparency Report",
+            "type": "md"
+          },
+          {
+            "filename": "Property_Tax_Guide.md",
+            "path": "data/Smart Society/Financials & Accounts/Property_Tax_Guide.md",
+            "topic": "Property Tax Guide",
+            "type": "md"
+          },
+          {
+            "filename": "Surcharge_&_Arrears_Policy.md",
+            "path": "data/Smart Society/Financials & Accounts/Surcharge_&_Arrears_Policy.md",
+            "topic": "Surcharge & Arrears Policy",
+            "type": "md"
+          },
+          {
+            "filename": "Utility_Bills_Payment.md",
+            "path": "data/Smart Society/Financials & Accounts/Utility_Bills_Payment.md",
+            "topic": "Utility Bills Payment",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Infrastructure & Security",
+        "document_count": 8,
+        "documents": [
+          {
+            "filename": "Commercial_Area_Rules.md",
+            "path": "data/Smart Scociety/Infrastructure & Security/Commercial_Area_Rules.md",
+            "topic": "Commercial Area Rules",
+            "type": "markdown"
+          },
+          {
+            "filename": "construction_rules.md",
+            "path": "data/Smart Scociety/Infrastructure & Security/construction_rules.md",
+            "topic": "construction rules",
+            "type": "markdown"
+          },
+          {
+            "filename": "General Security & Discipline.md",
+            "path": "data/Smart Scociety/Infrastructure & Security/General Security & Discipline.md",
+            "topic": "General Security and Discipline",
+            "type": "markdown"
+          },
+          {
+            "filename": "Security_Systems_RFID.md",
+            "path": "data/Smart Scociety/Infrastructure & Security/Security_Systems_RFID.md",
+            "topic": "Security Systems RFID",
+            "type": "markdown"
+          },
+          {
+            "filename": "Commercial_Area_Rules.md",
+            "path": "data/Smart Society/Infrastructure & Security/Commercial_Area_Rules.md",
+            "topic": "Commercial Area Rules",
+            "type": "md"
+          },
+          {
+            "filename": "construction_rules.md",
+            "path": "data/Smart Society/Infrastructure & Security/construction_rules.md",
+            "topic": "construction rules",
+            "type": "md"
+          },
+          {
+            "filename": "General Security & Discipline.md",
+            "path": "data/Smart Society/Infrastructure & Security/General Security & Discipline.md",
+            "topic": "General Security & Discipline",
+            "type": "md"
+          },
+          {
+            "filename": "Security_Systems_RFID.md",
+            "path": "data/Smart Society/Infrastructure & Security/Security_Systems_RFID.md",
+            "topic": "Security Systems RFID",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Operations & Utilities",
+        "document_count": 12,
+        "documents": [
+          {
+            "filename": "Emergency_Procedures_SOP.md",
+            "path": "data/Smart Scociety/Operations & Utilities/Emergency_Procedures_SOP.md",
+            "topic": "Emergency Procedures SOP",
+            "type": "markdown"
+          },
+          {
+            "filename": "Environmental_&_Plantation.md",
+            "path": "data/Smart Scociety/Operations & Utilities/Environmental_&_Plantation.md",
+            "topic": "Environmental and Plantation",
+            "type": "markdown"
+          },
+          {
+            "filename": "Facilities & Amenities.md",
+            "path": "data/Smart Scociety/Operations & Utilities/Facilities & Amenities.md",
+            "topic": "Facilities and Amenities",
+            "type": "markdown"
+          },
+          {
+            "filename": "Library_&_Reading_Lounge.md",
+            "path": "data/Smart Scociety/Operations & Utilities/Library_&_Reading_Lounge.md",
+            "topic": "Library and Reading Lounge",
+            "type": "markdown"
+          },
+          {
+            "filename": "Pet_Ownership_Bylaws.md",
+            "path": "data/Smart Scociety/Operations & Utilities/Pet_Ownership_Bylaws.md",
+            "topic": "Pet Ownership Bylaws",
+            "type": "markdown"
+          },
+          {
+            "filename": "Electricity_&_Generator_Policy.md",
+            "path": "data/Smart Society/Operations & Utilities/Electricity_&_Generator_Policy.md",
+            "topic": "Electricity & Generator Policy",
+            "type": "md"
+          },
+          {
+            "filename": "Emergency_Procedures_SOP.md",
+            "path": "data/Smart Society/Operations & Utilities/Emergency_Procedures_SOP.md",
+            "topic": "Emergency Procedures SOP",
+            "type": "md"
+          },
+          {
+            "filename": "Environmental_&_Plantation.md",
+            "path": "data/Smart Society/Operations & Utilities/Environmental_&_Plantation.md",
+            "topic": "Environmental & Plantation",
+            "type": "md"
+          },
+          {
+            "filename": "Facilities & Amenities.md",
+            "path": "data/Smart Society/Operations & Utilities/Facilities & Amenities.md",
+            "topic": "Facilities & Amenities",
+            "type": "md"
+          },
+          {
+            "filename": "Library_&_Reading_Lounge.md",
+            "path": "data/Smart Society/Operations & Utilities/Library_&_Reading_Lounge.md",
+            "topic": "Library & Reading Lounge",
+            "type": "md"
+          },
+          {
+            "filename": "Parking_Management.md",
+            "path": "data/Smart Society/Operations & Utilities/Parking_Management.md",
+            "topic": "Parking Management",
+            "type": "md"
+          },
+          {
+            "filename": "Pet_Ownership_Bylaws.md",
+            "path": "data/Smart Society/Operations & Utilities/Pet_Ownership_Bylaws.md",
+            "topic": "Pet Ownership Bylaws",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Education & Childcare",
+        "document_count": 3,
+        "documents": [
+          {
+            "filename": "Daycare_&_Nursery.md",
+            "path": "data/Smart Society/Education & Childcare/Daycare_&_Nursery.md",
+            "topic": "Daycare & Nursery",
+            "type": "md"
+          },
+          {
+            "filename": "School_Bus_Service.md",
+            "path": "data/Smart Society/Education & Childcare/School_Bus_Service.md",
+            "topic": "School Bus Service",
+            "type": "md"
+          },
+          {
+            "filename": "Tuition_&_Learning_Center.md",
+            "path": "data/Smart Society/Education & Childcare/Tuition_&_Learning_Center.md",
+            "topic": "Tuition & Learning Center",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Health & Medical Services",
+        "document_count": 3,
+        "documents": [
+          {
+            "filename": "Ambulance_&_First_Aid.md",
+            "path": "data/Smart Society/Health & Medical Services/Ambulance_&_First_Aid.md",
+            "topic": "Ambulance & First Aid",
+            "type": "md"
+          },
+          {
+            "filename": "Clinic_&_Pharmacy.md",
+            "path": "data/Smart Society/Health & Medical Services/Clinic_&_Pharmacy.md",
+            "topic": "Clinic & Pharmacy",
+            "type": "md"
+          },
+          {
+            "filename": "Mental_Health_&_Counseling.md",
+            "path": "data/Smart Society/Health & Medical Services/Mental_Health_&_Counseling.md",
+            "topic": "Mental Health & Counseling",
+            "type": "md"
+          }
+        ]
+      },
+      {
+        "name": "Sports & Recreation",
+        "document_count": 4,
+        "documents": [
+          {
+            "filename": "Gym_&_Fitness_Center.md",
+            "path": "data/Smart Society/Sports & Recreation/Gym_&_Fitness_Center.md",
+            "topic": "Gym & Fitness Center",
+            "type": "md"
+          },
+          {
+            "filename": "Jogging_Tracks_&_Cycling.md",
+            "path": "data/Smart Society/Sports & Recreation/Jogging_Tracks_&_Cycling.md",
+            "topic": "Jogging Tracks & Cycling",
+            "type": "md"
+          },
+          {
+            "filename": "Sports_Complex_Rules.md",
+            "path": "data/Smart Society/Sports & Recreation/Sports_Complex_Rules.md",
+            "topic": "Sports Complex Rules",
+            "type": "md"
+          },
+          {
+            "filename": "Swimming_Pool_Policy.md",
+            "path": "data/Smart Society/Sports & Recreation/Swimming_Pool_Policy.md",
+            "topic": "Swimming Pool Policy",
+            "type": "md"
+          }
+        ]
+      }
+    ]
+  }
+}
