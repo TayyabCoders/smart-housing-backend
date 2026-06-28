@@ -15,6 +15,12 @@ class Role(str, Enum):
     user = "user"
     guest = "guest"
 
+class Gender(str, Enum):
+    male = "male"
+    female = "female"
+    other = "other"
+    prefer_not_to_say = "prefer_not_to_say"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -33,6 +39,17 @@ class User(Base):
         nullable=False, 
         default=Role.user
     )
+    
+    phone_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    age: Mapped[Optional[int]] = mapped_column(nullable=True)
+    gender: Mapped[Optional[Gender]] = mapped_column(
+        SQLEnum(Gender, name="gender"), 
+        nullable=True
+    )
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    country: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    zip_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     

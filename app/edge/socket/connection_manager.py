@@ -48,6 +48,10 @@ class ConnectionManager:
 
     async def _listen_to_redis(self):
         """Listen to Redis for cross-instance messages"""
+        if not self.redis or not self.redis.client:
+            logger.warning("Redis not available, skipping Pub/Sub listener")
+            return
+            
         pubsub = self.redis.client.pubsub()
         pubsub.subscribe("ws_broadcast", "ws_user", "ws_room")
         
@@ -55,6 +59,11 @@ class ConnectionManager:
         
         while True:
             try:
+                # Check if redis is still available
+                if not self.redis or not self.redis.client:
+                    logger.warning("Redis became unavailable, stopping Pub/Sub listener")
+                    break
+                    
                 # Since redis-py's pubsub is blocking, we use a loop or thread
                 # But here we'll use the non-blocking get_message if possible
                 # or better, assume the user might switch to redis.asyncio
@@ -71,6 +80,9 @@ class ConnectionManager:
                         await self._local_send_to_room(data.get("room_id"), data.get("message"), data.get("exclude_client"))
                 
                 await asyncio.sleep(0.01)
+            except asyncio.CancelledError:
+                logger.info("Redis Pub/Sub listener cancelled")
+                break
             except Exception as e:
                 logger.error(f"Error in Redis Pub/Sub listener: {e}")
                 await asyncio.sleep(1)

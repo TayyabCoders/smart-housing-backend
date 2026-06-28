@@ -1,13 +1,15 @@
 from pydantic import BaseModel, EmailStr
+from app.schemas.user_schema import User
 
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 class TokenResponse(BaseModel):
-    access_token: str
+    token: str
     refresh_token: str | None = None
     token_type: str = "bearer"
+    user: User
 
 class TokenData(BaseModel):
     username: str | None = None

@@ -114,7 +114,7 @@ class AuthService:
             self.prometheus.record_business_event("user_login", "success")
         
             return {
-                "access_token": access_token,
+                "token": access_token,
                 "refresh_token": refresh_token,
                 "token_type": "bearer",
                 "user": user,
