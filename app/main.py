@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.configs.app_config import settings
 from app.configs.logger_config import setup_logging
+from app.configs import cloudinary_config
 
 from app.di import load_all_dependencies
 from app.edge.http.routes import register_routes
@@ -30,8 +31,11 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing database connection...")
     await database.connect()
     
-    # 1.1 Start WebSocket Connection Manager Background Tasks
+    # 1.1 Setup WebSocket Connection Manager
     from app.edge.socket.connection_manager import manager
+    prometheus = container.resolve('prometheus')
+    redis = container.resolve('cache')
+    manager.set_dependencies(prometheus=prometheus, redis=redis)
     await manager.start()
     
     # 2. Initialize Models (create tables) - controlled by setting

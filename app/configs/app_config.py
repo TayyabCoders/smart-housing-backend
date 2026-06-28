@@ -91,6 +91,11 @@ class Settings(BaseSettings):
     
     # Metrics
     ENABLE_METRICS: bool = Field(default=True, env="ENABLE_METRICS")
+
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: str
+    CLOUDINARY_API_KEY: str
+    CLOUDINARY_API_SECRET: str
     
     class Config:
         env_file = ".env"

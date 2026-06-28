@@ -38,6 +38,7 @@ dependencies = [
     "httpx>=0.25.2",
     "alembic>=1.12.1",
     "pgvector>=0.4.2",
+    "cloudinary>=1.44.2",
 ]
 
 [project.optional-dependencies]
