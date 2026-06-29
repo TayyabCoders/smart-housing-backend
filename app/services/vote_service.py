@@ -28,6 +28,24 @@ class VoteService:
         self.election_repository = election_repository
         self.prometheus = prometheus
     
+    async def list_votes(self, filters: dict = None, offset: int = 0, limit: int = 10) -> Dict[str, Any]:
+        try:
+            logger.info("VoteService: Listing votes...")
+            
+            result = await self.vote_repository.findAndCountAll(filters, offset, limit)
+            
+            # Convert SQLAlchemy Vote objects to Pydantic Vote schemas
+            vote_schemas = [Vote.model_validate(vote) for vote in result['rows']]
+            result['rows'] = vote_schemas
+            
+            logger.info(f"VoteService: Listed votes successfully. Total: {result['total']}")
+            
+            return result
+        
+        except Exception as e:
+            logger.error("VoteService: Failed to list votes.", exc_info=True)
+            raise e
+    
     async def submit_vote(self, vote_data: VoteCreate) -> Dict[str, Any]:
         try:
             logger.info("VoteService: Submitting vote...")

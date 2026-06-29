@@ -1,15 +1,19 @@
 from pydantic import BaseModel, ConfigDict
 
 
+class Metrics(BaseModel):
+    """Dashboard metrics"""
+    totalUsers: int
+    totalComplaints: int
+    pendingComplaints: int
+    totalVoters: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class DashboardStatsResponse(BaseModel):
     """Dashboard statistics response"""
-    vehicles_today: int
-    vehicles_yesterday_delta: int
-    faces_verified: int
-    faces_match_rate: float
-    active_visitors: int
-    visitors_awaiting_approval: int
-    alerts_24h: int
-    alerts_blacklist_count: int
+    success: bool
+    data: dict
 
     model_config = ConfigDict(from_attributes=True)
