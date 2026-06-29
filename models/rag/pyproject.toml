@@ -1,0 +1,28 @@
+[project]
+name = "rag"
+version = "0.1.0"
+description = "Smart Society RAG Bot"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "confluent-kafka>=2.14.0",
+    "fastapi>=0.136.1",
+    "fastembed>=0.8.0",
+    "fastmcp>=3.2.4",
+    "gradio>=4.0.0",          
+    "groq>=0.5.0",
+    "langchain-community>=0.0.1",
+    "langchain-openai>=0.0.1",
+    "langchain-text-splitters>=0.0.1",
+    "markdown>=3.5",
+    "openai>=1.0.0",
+    "pyngrok>=7.0.0",
+    "pypdf>=4.0.0",
+    "python-dotenv>=1.0.0",
+    "qdrant-client==1.10.1",   
+    "sentence-transformers>=2.0.0",
+    "unstructured>=0.10.0",
+    "streamlit>=1.35.0",
+    "uvicorn>=0.20.0",
+]

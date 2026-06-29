@@ -1,0 +1,31 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Git
+.git/
+.gitignore
+
+# Secrets
+.env
+.env.*
+
+# Gradio / IDE
+.gradio/
+.python-version
+.vscode/
+.idea/
+
+# Storage (mounted as volume in production)
+qdrant_storage/
+
+# Docs
+USER_GUIDE.md
+README.md
+
+# Logs
+*.log
+messages.json
