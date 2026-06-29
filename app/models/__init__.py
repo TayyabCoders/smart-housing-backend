@@ -11,6 +11,10 @@ from app.models.face_detection import FaceDetection
 from app.models.alert import Alert
 from app.models.visitor_approval import VisitorApproval
 from app.models.complaint_model import Complaint
+from app.models.election import Election
+from app.models.candidate import Candidate
+from app.models.vote import Vote
+from app.models.activity_log import ActivityLog
 
 
 async def initialize_models(database: Any) -> None:
@@ -40,5 +44,9 @@ __all__ = [
     "Alert",
     "VisitorApproval",
     "Complaint",
+    "Election",
+    "Candidate",
+    "Vote",
+    "ActivityLog",
     "initialize_models",
 ]

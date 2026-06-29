@@ -18,6 +18,8 @@ from app.models.camera import Camera
 from app.models.person import Person
 from app.models.vehicle import Vehicle
 from app.models.enums import CameraType, PersonRole, VehicleStatus
+from app.models.election import Election
+from app.models.candidate import Candidate
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -299,6 +301,101 @@ async def seed_vehicles(session: AsyncSession):
     print(f"✓ Seeded {len(vehicles_data)} vehicles")
 
 
+async def seed_election(session: AsyncSession):
+    """Seed election table"""
+    print("Seeding election...")
+    
+    # Check if election already exists
+    result = await session.execute(text("SELECT COUNT(*) FROM elections"))
+    count = result.scalar()
+    if count > 0:
+        print(f"  Skipping - {count} elections already exist")
+        return None
+    
+    election_data = {
+        "title": "Society Committee Election 2025",
+        "society_name": "Green Valley Society",
+        "society_location": "Gulshan-e-Iqbal, Karachi",
+        "election_date": datetime(2025, 2, 1, tzinfo=timezone.utc),
+        "is_active": True,
+        "total_eligible_voters": 500,
+    }
+    
+    election = Election(**election_data)
+    session.add(election)
+    await session.commit()
+    await session.refresh(election)
+    
+    print(f"✓ Seeded 1 election")
+    return election
+
+
+async def seed_candidates(session: AsyncSession):
+    """Seed candidates table"""
+    print("Seeding candidates...")
+    
+    # Check if candidates already exist
+    result = await session.execute(text("SELECT COUNT(*) FROM candidates"))
+    count = result.scalar()
+    if count > 0:
+        print(f"  Skipping - {count} candidates already exist")
+        return
+    
+    # Get active election
+    election_result = await session.execute(
+        text("SELECT id FROM elections WHERE is_active = true LIMIT 1")
+    )
+    election_row = election_result.fetchone()
+    
+    if not election_row:
+        print("  Skipping - No active election found")
+        return
+    
+    election_id = election_row.id
+    
+    candidates_data = [
+        {
+            "election_id": election_id,
+            "name": "Muhammad Khalid Ansari",
+            "role": "Chairman Candidate",
+            "party": "Tehreek-e-Taraqqi",
+            "p_class": "text-blue-500 bg-blue-500/15 border border-blue-500/20",
+            "emoji": "👨‍💼",
+        },
+        {
+            "election_id": election_id,
+            "name": "Ahmed Raza Khan",
+            "role": "Chairman Candidate",
+            "party": "Pakistan Awami Tehreek",
+            "p_class": "text-green-500 bg-green-500/15 border border-green-500/20",
+            "emoji": "👨‍💼",
+        },
+        {
+            "election_id": election_id,
+            "name": "Syed Hassan Ali",
+            "role": "Chairman Candidate",
+            "party": "Independent",
+            "p_class": "text-purple-500 bg-purple-500/15 border border-purple-500/20",
+            "emoji": "👨‍💼",
+        },
+        {
+            "election_id": election_id,
+            "name": "Dr. Muhammad Asif",
+            "role": "Chairman Candidate",
+            "party": "Tehreek-e-Insaf",
+            "p_class": "text-red-500 bg-red-500/15 border border-red-500/20",
+            "emoji": "👨‍💼",
+        },
+    ]
+    
+    for candidate_data in candidates_data:
+        candidate = Candidate(**candidate_data)
+        session.add(candidate)
+    
+    await session.commit()
+    print(f"✓ Seeded {len(candidates_data)} candidates")
+
+
 async def seed_all():
     """Seed all tables"""
     print("=" * 50)
@@ -315,6 +412,8 @@ async def seed_all():
         await seed_cameras(session)
         await seed_persons(session)
         await seed_vehicles(session)
+        await seed_election(session)
+        await seed_candidates(session)
         
         print("=" * 50)
         print("✓ Database seeding completed successfully!")
@@ -342,6 +441,10 @@ async def clear_all():
     session = await get_db_session()
     try:
         # Clear in reverse order to respect foreign key constraints
+        await session.execute(text("DELETE FROM votes"))
+        await session.execute(text("DELETE FROM activity_logs"))
+        await session.execute(text("DELETE FROM candidates"))
+        await session.execute(text("DELETE FROM elections"))
         await session.execute(text("DELETE FROM vehicles"))
         await session.execute(text("DELETE FROM persons"))
         await session.execute(text("DELETE FROM cameras"))

@@ -40,6 +40,28 @@ from app.schemas.complaint_schema import (
     ComplaintCreate,
     ComplaintUpdate,
 )
+from app.schemas.election_schema import (
+    Election,
+    ElectionCreate,
+    ElectionUpdate,
+    ElectionStatusResponse,
+)
+from app.schemas.candidate_schema import (
+    Candidate,
+    CandidateCreate,
+    CandidateUpdate,
+    CandidateResult,
+)
+from app.schemas.vote_schema import (
+    Vote,
+    VoteCreate,
+    VoteResponse,
+)
+from app.schemas.activity_log_schema import (
+    ActivityLog,
+    ActivityLogCreate,
+    ActivityLogResponse,
+)
 
 __all__ = [
     # Common
@@ -80,4 +102,22 @@ __all__ = [
     "Complaint",
     "ComplaintCreate",
     "ComplaintUpdate",
+    # Elections
+    "Election",
+    "ElectionCreate",
+    "ElectionUpdate",
+    "ElectionStatusResponse",
+    # Candidates
+    "Candidate",
+    "CandidateCreate",
+    "CandidateUpdate",
+    "CandidateResult",
+    # Votes
+    "Vote",
+    "VoteCreate",
+    "VoteResponse",
+    # Activity Logs
+    "ActivityLog",
+    "ActivityLogCreate",
+    "ActivityLogResponse",
 ]
