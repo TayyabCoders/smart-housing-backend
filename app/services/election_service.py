@@ -18,10 +18,12 @@ class ElectionService:
         self,
         election_repository = Provide["election_repository"],
         vote_repository = Provide["vote_repository"],
+        candidate_service = Provide["candidate_service"],
         prometheus = Provide["prometheus"],
     ):
         self.election_repository = election_repository
         self.vote_repository = vote_repository
+        self.candidate_service = candidate_service
         self.prometheus = prometheus
     
     async def get_election_status(self) -> ElectionStatusResponse:
@@ -44,6 +46,25 @@ class ElectionService:
             if election.total_eligible_voters > 0:
                 participation_rate = (total_votes_cast / election.total_eligible_voters) * 100
             
+            # Get candidates for this election
+            candidates = await self.candidate_service.get_candidates()
+            total_candidates = len(candidates.get("data", []))
+            
+            # Get leading candidate info
+            leading = None
+            top_candidate = None
+            
+            if total_candidates > 0 and total_votes_cast > 0:
+                results = await self.candidate_service.get_results()
+                candidates_data = results.get("data", {}).get("candidates", [])
+                
+                if candidates_data:
+                    # Find the candidate with highest votes (rank 1)
+                    leading_candidate = next((c for c in candidates_data if c.rank == 1), None)
+                    if leading_candidate:
+                        leading = leading_candidate.name
+                        top_candidate = leading_candidate.percentage
+            
             status_response = ElectionStatusResponse(
                 id=election.id,
                 title=election.title,
@@ -53,7 +74,10 @@ class ElectionService:
                 is_active=election.is_active,
                 total_eligible_voters=election.total_eligible_voters,
                 total_votes_cast=total_votes_cast,
-                participation_rate=round(participation_rate, 2)
+                participation_rate=round(participation_rate, 2),
+                total_candidates=total_candidates,
+                leading=leading,
+                top_candidate=top_candidate
             )
             
             logger.info("ElectionService: Got election status successfully.")
@@ -61,7 +85,10 @@ class ElectionService:
             # Record business event
             self.prometheus.record_business_event("election_status", "success")
             
-            return status_response
+            return {
+                "success": True,
+                "data": status_response.model_dump()
+            }
         
         except HTTPException:
             raise

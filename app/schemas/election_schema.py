@@ -43,5 +43,8 @@ class ElectionStatusResponse(BaseModel):
     total_eligible_voters: int
     total_votes_cast: int
     participation_rate: float
+    total_candidates: int
+    leading: Optional[str] = None
+    top_candidate: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
