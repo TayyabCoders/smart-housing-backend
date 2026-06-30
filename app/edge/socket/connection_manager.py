@@ -27,9 +27,11 @@ class ConnectionManager:
 
     async def start(self):
         """Start background tasks"""
-        if self.redis and not self._pubsub_task:
+        if self.redis and self.redis.client and not self._pubsub_task:
             self._pubsub_task = asyncio.create_task(self._listen_to_redis())
             logger.info("Background task for Redis Pub/Sub started")
+        elif self.redis and not self.redis.client:
+            logger.info("Redis client not available, skipping Pub/Sub background task")
 
     async def stop(self):
         """Stop background tasks"""
@@ -143,7 +145,7 @@ class ConnectionManager:
 
     async def send_to_user(self, message: dict, user_id: str):
         """Send message to all connections of a specific user (Cross-instance)"""
-        if self.redis:
+        if self.redis and self.redis.client:
             self.redis.client.publish("ws_user", json.dumps({"user_id": user_id, "message": message}))
         else:
             await self._local_send_to_user(user_id, message)
@@ -155,7 +157,7 @@ class ConnectionManager:
 
     async def send_to_room(self, message: dict, room_id: str, exclude_client: str = None):
         """Broadcast message to all users in a room (Cross-instance)"""
-        if self.redis:
+        if self.redis and self.redis.client:
             self.redis.client.publish("ws_room", json.dumps({
                 "room_id": room_id, 
                 "message": message, 
@@ -172,7 +174,7 @@ class ConnectionManager:
 
     async def broadcast(self, message: dict):
         """Send message to all connected users (Cross-instance)"""
-        if self.redis:
+        if self.redis and self.redis.client:
             self.redis.client.publish("ws_broadcast", json.dumps(message))
         else:
             await self._local_broadcast(message)

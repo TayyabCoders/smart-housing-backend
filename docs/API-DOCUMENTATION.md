@@ -1217,6 +1217,713 @@ Potential improvements to consider:
 
 ---
 
+# Chat System API Documentation
+
+**Base URL:** `/api/v1/chat`
+
+**WebSocket URL:** `ws://localhost:8000/ws/{client_id}?token=YOUR_ACCESS_TOKEN`
+
+**Authentication:** Required (Bearer Token)
+
+---
+
+## Overview
+
+The Chat System API provides real-time messaging capabilities with WebSocket support for the Smart Housing system. This includes sending/receiving messages, conversation management, unread count tracking, online status detection, read receipts, and typing indicators.
+
+---
+
+## Architecture
+
+The Chat System API follows the layered architecture pattern:
+
+```
+Route → Controller → Mediator → Service → Repository → Database
+```
+
+- **Route:** `app/edge/http/routes/chat_route.py`
+- **Controller:** `app/edge/http/controller/chat_controller.py`
+- **Mediator:** `app/mediator/chat_mediator.py`
+- **Service:** `app/services/chat_service.py`
+- **Repositories:**
+  - `app/repositories/message_repository.py`
+  - `app/repositories/conversation_repository.py`
+- **Models:**
+  - `app/models/chat.py` (Message, Conversation)
+- **Schemas:** `app/schemas/chat_schema.py`
+- **WebSocket:** `app/edge/socket/socket_handler.py`
+- **Connection Manager:** `app/edge/socket/connection_manager.py`
+
+---
+
+## Data Models
+
+### Message Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| id | UUID | Auto | Unique identifier |
+| sender_id | UUID | Yes | Sender user UUID |
+| receiver_id | UUID | Yes | Receiver user UUID |
+| content | string | Yes | Message content (text) |
+| timestamp | datetime | Auto | Message creation time |
+| is_read | boolean | Yes | Read status (default: false) |
+
+### Conversation Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| id | UUID | Auto | Unique identifier |
+| user1_id | UUID | Yes | First user UUID |
+| user2_id | UUID | Yes | Second user UUID |
+| last_message | string | No | Last message preview |
+| last_message_time | datetime | Auto | Last message timestamp |
+| unread_count_user1 | integer | Yes | Unread count for user1 (default: 0) |
+| unread_count_user2 | integer | Yes | Unread count for user2 (default: 0) |
+
+---
+
+## API Endpoints
+
+### 1. Send Message
+
+**Endpoint:** `POST /api/v1/chat/messages`
+
+**Description:** Send a message to another user. Message is persisted in database and sent via WebSocket if receiver is online.
+
+**Request Body:**
+
+```json
+{
+  "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+  "content": "Hello, how are you?"
+}
+```
+
+**Required Fields:** `receiver_id`, `content`
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "770e8400-e29b-41d4-a716-446655440002",
+  "sender_id": "660e8400-e29b-41d4-a716-446655440001",
+  "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+  "content": "Hello, how are you?",
+  "timestamp": "2024-01-15T14:30:00Z",
+  "is_read": false
+}
+```
+
+**Error Responses:**
+
+- `404 Not Found` - Receiver not found
+- `401 Unauthorized` - Missing or invalid authentication
+
+**Example Request:**
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat/messages" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+    "content": "Hello, how are you?"
+  }'
+```
+
+---
+
+### 2. Get Conversations
+
+**Endpoint:** `GET /api/v1/chat/conversations`
+
+**Description:** Get all conversations for the current user with unread counts and online status.
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440003",
+    "user_id": "550e8400-e29b-41d4-a716-446655440000",
+    "username": "john_doe",
+    "last_message": "Hello, how are you?",
+    "last_message_time": "2024-01-15T14:30:00Z",
+    "unread_count": 2,
+    "is_online": true
+  }
+]
+```
+
+**Example Request:**
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/conversations" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+### 3. Get Messages
+
+**Endpoint:** `GET /api/v1/chat/messages/{user_id}`
+
+**Description:** Get message history between current user and another user. Messages are marked as read when fetched.
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| user_id | string | Yes | Other user's UUID |
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| limit | integer | No | 50 | Number of messages (1-100) |
+| offset | integer | No | 0 | Number of messages to skip |
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440002",
+    "sender_id": "660e8400-e29b-41d4-a716-446655440001",
+    "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+    "content": "Hello, how are you?",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "is_read": true
+  }
+]
+```
+
+**Example Request:**
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/messages/550e8400-e29b-41d4-a716-446655440000?limit=50&offset=0" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+### 4. Mark Message as Read
+
+**Endpoint:** `PUT /api/v1/chat/messages/{message_id}/read`
+
+**Description:** Mark a specific message as read.
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| message_id | string | Yes | Message UUID |
+
+**Response:** `200 OK`
+
+```json
+{
+  "status": "success"
+}
+```
+
+**Error Responses:**
+
+- `404 Not Found` - Message not found
+- `403 Forbidden` - Not the message receiver
+
+**Example Request:**
+
+```bash
+curl -X PUT "http://localhost:8000/api/v1/chat/messages/770e8400-e29b-41d4-a716-446655440002/read" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+## WebSocket Testing
+
+### WebSocket Connection
+
+**Endpoint:** `ws://localhost:8000/ws/{client_id}?token=YOUR_ACCESS_TOKEN`
+
+**Description:** Connect to WebSocket for real-time messaging. The `client_id` should be a unique identifier for the client connection (e.g., browser session ID).
+
+### WebSocket Message Types
+
+#### 1. Chat Message
+
+Send a message via WebSocket:
+
+```json
+{
+  "type": "chat_message",
+  "payload": {
+    "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+    "content": "Hello via WebSocket!",
+    "timestamp": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+Receive a message via WebSocket:
+
+```json
+{
+  "type": "chat_message",
+  "data": {
+    "id": "770e8400-e29b-41d4-a716-446655440002",
+    "sender_id": "660e8400-e29b-41d4-a716-446655440001",
+    "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+    "content": "Hello via WebSocket!",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "is_read": false
+  }
+}
+```
+
+#### 2. Typing Indicator
+
+Send typing indicator:
+
+```json
+{
+  "type": "typing",
+  "payload": {
+    "receiver_id": "550e8400-e29b-41d4-a716-446655440000",
+    "is_typing": true
+  }
+}
+```
+
+Receive typing indicator:
+
+```json
+{
+  "type": "typing",
+  "sender_id": "660e8400-e29b-41d4-a716-446655440001",
+  "is_typing": true
+}
+```
+
+#### 3. Read Receipt
+
+Send read receipt:
+
+```json
+{
+  "type": "read_receipt",
+  "payload": {
+    "message_id": "770e8400-e29b-41d4-a716-446655440002",
+    "sender_id": "660e8400-e29b-41d4-a716-446655440001"
+  }
+}
+```
+
+Receive read receipt:
+
+```json
+{
+  "type": "read_receipt",
+  "message_id": "770e8400-e29b-41d4-a716-446655440002",
+  "reader_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## Testing Guide
+
+### Prerequisites
+
+1. **Start the Backend Server**
+
+```bash
+cd d:\360ExpertsTrainee\Project\smart-housing-backend
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+2. **Create Test Users**
+
+```bash
+# Register User 1
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user1",
+    "email": "user1@example.com",
+    "password": "Password123!"
+  }'
+
+# Register User 2
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user2",
+    "email": "user2@example.com",
+    "password": "Password123!"
+  }'
+```
+
+3. **Get Access Tokens**
+
+```bash
+# Login User 1
+TOKEN1=$(curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user1@example.com", "password": "Password123!"}' \
+  | jq -r '.access_token')
+
+# Login User 2
+TOKEN2=$(curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user2@example.com", "password": "Password123!"}' \
+  | jq -r '.access_token')
+
+# Get User IDs
+USER1_ID=$(curl -X GET "http://localhost:8000/api/v1/users" \
+  -H "Authorization: Bearer $TOKEN1" \
+  | jq -r '.rows[0].id')
+
+USER2_ID=$(curl -X GET "http://localhost:8000/api/v1/users" \
+  -H "Authorization: Bearer $TOKEN2" \
+  | jq -r '.rows[0].id')
+```
+
+### REST API Testing
+
+#### Test 1: Send Message
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat/messages" \
+  -H "Authorization: Bearer $TOKEN1" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"receiver_id\": \"$USER2_ID\",
+    \"content\": \"Hello from User 1!\"
+  }"
+```
+
+#### Test 2: Get Conversations
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/conversations" \
+  -H "Authorization: Bearer $TOKEN1"
+```
+
+#### Test 3: Get Messages
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/messages/$USER2_ID" \
+  -H "Authorization: Bearer $TOKEN1"
+```
+
+#### Test 4: Mark as Read
+
+```bash
+# First get a message ID
+MESSAGE_ID=$(curl -X GET "http://localhost:8000/api/v1/chat/messages/$USER2_ID" \
+  -H "Authorization: Bearer $TOKEN1" \
+  | jq -r '.[0].id')
+
+# Mark as read
+curl -X PUT "http://localhost:8000/api/v1/chat/messages/$MESSAGE_ID/read" \
+  -H "Authorization: Bearer $TOKEN1"
+```
+
+### WebSocket Testing
+
+#### Method 1: Using wscat (Node.js)
+
+Install wscat:
+```bash
+npm install -g wscat
+```
+
+Connect as User 1:
+```bash
+wscat -c "ws://localhost:8000/ws/client-user-1?token=$TOKEN1"
+```
+
+Connect as User 2 (in another terminal):
+```bash
+wscat -c "ws://localhost:8000/ws/client-user-2?token=$TOKEN2"
+```
+
+Send message from User 1:
+```json
+{
+  "type": "chat_message",
+  "payload": {
+    "receiver_id": "USER2_UUID_HERE",
+    "content": "Hello via WebSocket!",
+    "timestamp": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+You should see the message appear in User 2's terminal.
+
+#### Method 2: Using Python
+
+Create a test script `test_websocket.py`:
+
+```python
+import asyncio
+import websockets
+import json
+
+async def test_websocket():
+    uri = "ws://localhost:8000/ws/client-test?token=YOUR_ACCESS_TOKEN"
+    
+    async with websockets.connect(uri) as websocket:
+        # Send a message
+        message = {
+            "type": "chat_message",
+            "payload": {
+                "receiver_id": "RECEIVER_UUID_HERE",
+                "content": "Hello from Python!",
+                "timestamp": "2024-01-15T14:30:00Z"
+            }
+        }
+        await websocket.send(json.dumps(message))
+        
+        # Receive messages
+        while True:
+            response = await websocket.recv()
+            print(f"Received: {response}")
+
+asyncio.run(test_websocket())
+```
+
+Run the test:
+```bash
+pip install websockets
+python test_websocket.py
+```
+
+#### Method 3: Using Browser Console
+
+Open browser console and run:
+
+```javascript
+const ws = new WebSocket('ws://localhost:8000/ws/client-browser?token=YOUR_ACCESS_TOKEN');
+
+ws.onopen = () => {
+    console.log('WebSocket connected');
+    
+    // Send a message
+    ws.send(JSON.stringify({
+        type: 'chat_message',
+        payload: {
+            receiver_id: 'RECEIVER_UUID_HERE',
+            content: 'Hello from browser!',
+            timestamp: new Date().toISOString()
+        }
+    }));
+};
+
+ws.onmessage = (event) => {
+    console.log('Received:', JSON.parse(event.data));
+};
+
+ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+};
+
+ws.onclose = () => {
+    console.log('WebSocket disconnected');
+};
+```
+
+### Testing Typing Indicators
+
+From User 1's WebSocket connection:
+```json
+{
+  "type": "typing",
+  "payload": {
+    "receiver_id": "USER2_UUID_HERE",
+    "is_typing": true
+  }
+}
+```
+
+User 2 should receive:
+```json
+{
+  "type": "typing",
+  "sender_id": "USER1_UUID_HERE",
+  "is_typing": true
+}
+```
+
+### Testing Read Receipts
+
+From User 2's WebSocket connection after reading a message:
+```json
+{
+  "type": "read_receipt",
+  "payload": {
+    "message_id": "MESSAGE_UUID_HERE",
+    "sender_id": "USER1_UUID_HERE"
+  }
+}
+```
+
+User 1 should receive:
+```json
+{
+  "type": "read_receipt",
+  "message_id": "MESSAGE_UUID_HERE",
+  "reader_id": "USER2_UUID_HERE"
+}
+```
+
+---
+
+## Business Logic
+
+### Message Sending
+- Validates receiver exists
+- Creates message record in database
+- Updates or creates conversation between users
+- Increments unread count for receiver
+- Sends real-time notification via WebSocket if receiver is online
+- Records Prometheus metric for message sent
+
+### Conversation Management
+- Tracks last message and timestamp
+- Maintains unread counts for both users
+- Returns conversations ordered by last message time
+- Shows online status based on WebSocket connection
+
+### Message Retrieval
+- Returns messages between two users
+- Marks messages as read when fetched
+- Resets unread count for current user
+- Supports pagination with limit/offset
+
+### Real-time Features
+- WebSocket connection manager tracks online users
+- Redis pub/sub for cross-instance messaging (scalable)
+- Typing indicators for real-time feedback
+- Read receipts for message confirmation
+
+---
+
+## Security Considerations
+
+1. **Authentication**
+   - All REST endpoints require valid JWT token
+   - WebSocket connection requires token in query parameter
+   - Token validated on connection establishment
+
+2. **Authorization**
+   - Users can only send messages to existing users
+   - Users can only mark their own received messages as read
+   - Message history only accessible to conversation participants
+
+3. **Data Privacy**
+   - Messages stored securely in database
+   - Online status only visible to conversation participants
+   - Read receipts only sent to message sender
+
+4. **Rate Limiting**
+   - Consider implementing rate limiting for message sending
+   - Prevent spam/flooding via WebSocket
+
+---
+
+## Database Schema
+
+### Messages Table
+
+```sql
+CREATE TABLE messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sender_id UUID NOT NULL,
+    receiver_id UUID NOT NULL,
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT fk_messages_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_messages_receiver FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_messages_sender ON messages(sender_id);
+CREATE INDEX idx_messages_receiver ON messages(receiver_id);
+CREATE INDEX idx_messages_timestamp ON messages(timestamp DESC);
+```
+
+### Conversations Table
+
+```sql
+CREATE TABLE conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user1_id UUID NOT NULL,
+    user2_id UUID NOT NULL,
+    last_message TEXT,
+    last_message_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    unread_count_user1 INTEGER NOT NULL DEFAULT 0,
+    unread_count_user2 INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT fk_conversations_user1 FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_conversations_user2 FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT unique_conversation UNIQUE (user1_id, user2_id)
+);
+
+CREATE INDEX idx_conversations_user1 ON conversations(user1_id);
+CREATE INDEX idx_conversations_user2 ON conversations(user2_id);
+CREATE INDEX idx_conversations_last_message_time ON conversations(last_message_time DESC);
+```
+
+---
+
+## Migration
+
+To apply the chat system tables to your database, create and run an Alembic migration:
+
+```bash
+alembic revision --autogenerate -m "add chat system tables"
+alembic upgrade head
+```
+
+---
+
+## Future Enhancements
+
+Potential improvements to consider:
+
+1. **Message Features**
+   - Message editing/deletion
+   - Message reactions/emojis
+   - File/image attachments
+   - Voice messages
+   - Message forwarding
+
+2. **Conversation Features**
+   - Group chats
+   - Conversation archiving
+   - Conversation muting
+   - Search within conversations
+   - Export conversation history
+
+3. **Real-time Enhancements**
+   - Message delivery receipts
+   - Online status with last seen
+   - Push notifications for offline users
+   - Message encryption (E2E)
+
+4. **Advanced Features**
+   - Message threading
+   - Quick replies
+   - Message templates
+   - Scheduled messages
+   - Bot integration
+
+---
+
 ## Related Documentation
 
 - [Routes Implementation Plan](./routes-implementation-plan.md)
@@ -1226,4 +1933,4 @@ Potential improvements to consider:
 
 ---
 
-**Last Updated:** June 29, 2026
+**Last Updated:** June 30, 2026

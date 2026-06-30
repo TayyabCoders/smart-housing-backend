@@ -43,7 +43,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         """Process request with rate limiting."""
         # Check if route is exempt
-        if request.url.path in self.exempt_routes:
+        if request.url.path in self.exempt_routes or request.url.path.startswith("/ws"):
             return await call_next(request)
 
         # Get client identifier (IP address)

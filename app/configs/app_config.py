@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     RATE_LIMIT_WINDOW: int = Field(default=60, env="RATE_LIMIT_WINDOW")  # seconds
     RATE_LIMIT_STORAGE_URL: str = Field(default="memory://", env="RATE_LIMIT_STORAGE_URL")
     RATE_LIMIT_EXEMPT_ROUTES: List[str] = Field(
-        default=["/", "/health", "/metrics", "/docs", "/redoc", "/openapi.json"],
+        default=["/", "/health", "/metrics", "/docs", "/redoc", "/openapi.json", "/ws"],
         env="RATE_LIMIT_EXEMPT_ROUTES"
     )
     RATE_LIMIT_STRATEGY: str = Field(default="moving-window", env="RATE_LIMIT_STRATEGY")

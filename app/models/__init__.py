@@ -15,6 +15,7 @@ from app.models.election import Election
 from app.models.candidate import Candidate
 from app.models.vote import Vote
 from app.models.activity_log import ActivityLog
+from app.models.chat import Message, Conversation
 
 
 async def initialize_models(database: Any) -> None:
@@ -48,5 +49,7 @@ __all__ = [
     "Candidate",
     "Vote",
     "ActivityLog",
+    "Message",
+    "Conversation",
     "initialize_models",
 ]
