@@ -96,7 +96,11 @@ class Settings(BaseSettings):
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
-    
+
+    # RAG / O.T.T.O Chatbot service
+    RAG_SERVICE_URL: str = Field(default="http://localhost:8001", env="RAG_SERVICE_URL")
+    RAG_SERVICE_TIMEOUT: int = Field(default=30, env="RAG_SERVICE_TIMEOUT")
+
     class Config:
         env_file = ".env"
         case_sensitive = True

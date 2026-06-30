@@ -1,24 +1,21 @@
 services:
 
-  # ── 1. O.T.T.O Streamlit App ─────────────────────────────────────────────
-  rag-app:
+  # ── 1. O.T.T.O RAG API ────────────────────────────────────────────────────
+  rag-api:
     build:
       context: .
       dockerfile: dockerfile
-    container_name: otto_app
+    container_name: otto_api
     ports:
-      - "8501:8501"
+      - "8001:8001"
     env_file:
       - .env
     environment:
       - QDRANT_HOST=qdrant_db
       - QDRANT_PORT=6333
-      - KAFKA_BOOTSTRAP_SERVERS=kafka_broker:9092
     depends_on:
       qdrant:
         condition: service_healthy
-      kafka:
-        condition: service_started
     networks:
       - rag_internal
     restart: unless-stopped
