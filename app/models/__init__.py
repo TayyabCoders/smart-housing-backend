@@ -16,6 +16,8 @@ from app.models.candidate import Candidate
 from app.models.vote import Vote
 from app.models.activity_log import ActivityLog
 from app.models.chat import Message, Conversation
+from app.models.parking_record_model import ParkingRecord
+from app.models.cnic_record_model import CnicRecord
 
 
 async def initialize_models(database: Any) -> None:
@@ -51,5 +53,7 @@ __all__ = [
     "ActivityLog",
     "Message",
     "Conversation",
+    "ParkingRecord",
+    "CnicRecord",
     "initialize_models",
 ]

@@ -96,7 +96,11 @@ class Settings(BaseSettings):
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
-    
+
+    # Parking Vision
+    PARKING_UPLOAD_DIR: str = Field(default="uploads/parking", env="PARKING_UPLOAD_DIR")
+    PARKING_WEIGHTS_PATH: str = Field(default="app/weights/best.pt", env="PARKING_WEIGHTS_PATH")
+
     class Config:
         env_file = ".env"
         case_sensitive = True
