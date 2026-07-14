@@ -1,6 +1,5 @@
 confluent-kafka
 fastapi
-streamlit
 fastembed
 fastmcp
 gradio

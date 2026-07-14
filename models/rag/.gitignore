@@ -9,3 +9,6 @@ wheels/
 # Virtual environments
 .venv
 .env
+
+# Qdrant vector DB storage (machine-generated, re-created by scripts/ingest.py)
+qdrant_storage/

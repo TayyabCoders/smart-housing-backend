@@ -97,10 +97,12 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
 
-    # Parking Vision
+    # RAG / O.T.T.O Chatbot service
+    RAG_SERVICE_URL: str = Field(default="http://localhost:8001", env="RAG_SERVICE_URL")
+    RAG_SERVICE_TIMEOUT: int = Field(default=30, env="RAG_SERVICE_TIMEOUT")
+# Parking Vision
     PARKING_UPLOAD_DIR: str = Field(default="uploads/parking", env="PARKING_UPLOAD_DIR")
     PARKING_WEIGHTS_PATH: str = Field(default="app/weights/best.pt", env="PARKING_WEIGHTS_PATH")
-
     class Config:
         env_file = ".env"
         case_sensitive = True
