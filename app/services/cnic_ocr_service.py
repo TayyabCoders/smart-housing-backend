@@ -8,8 +8,6 @@ import cv2
 import numpy as np
 import structlog
 
-from app.utils.ocr_util import get_ocr
-
 _logger = structlog.get_logger(__name__)
 
 _CNIC_DASHED_RE = re.compile(r"^(\d{5})-(\d{7})-(\d)$")
@@ -166,20 +164,15 @@ class CnicOcrService:
             if scale > 1:
                 img = cv2.resize(img, (w0 * scale, h0 * scale), interpolation=cv2.INTER_LANCZOS4)
 
-        ocr = get_ocr()
+        from app.utils.ocr_util import run_ocr  # lazy import — avoids heavy load at startup
+
         for rotated in _rotate_variants(img):
             for proc in _preprocess_variants(rotated):
-                result = ocr.predict(proc)
                 kept: list[str] = []
-                for r in result:
-                    for detected_text, score in zip(r.get("rec_texts", []), r.get("rec_scores", [])):
-                        try:
-                            score_f = float(score)
-                        except Exception:
-                            continue
-                        if np.isnan(score_f) or score_f < min_conf:
-                            continue
-                        kept.append(str(detected_text))
+                for detected_text, score_f in run_ocr(proc):
+                    if np.isnan(score_f) or score_f < min_conf:
+                        continue
+                    kept.append(detected_text)
 
                 if not kept:
                     continue
@@ -220,22 +213,16 @@ class CnicOcrService:
             if scale > 1:
                 img = cv2.resize(img, (w0 * scale, h0 * scale), interpolation=cv2.INTER_LANCZOS4)
 
-        ocr = get_ocr()
+        from app.utils.ocr_util import run_ocr  # lazy import — avoids heavy load at startup
         best_fields: Optional[Dict[str, Optional[object]]] = None
 
         for rotated in _rotate_variants(img):
             for proc in _preprocess_variants(rotated):
-                result = ocr.predict(proc)
                 kept: list[str] = []
-                for r in result:
-                    for detected_text, score in zip(r.get("rec_texts", []), r.get("rec_scores", [])):
-                        try:
-                            score_f = float(score)
-                        except Exception:
-                            continue
-                        if np.isnan(score_f) or score_f < min_conf:
-                            continue
-                        kept.append(str(detected_text))
+                for detected_text, score_f in run_ocr(proc):
+                    if np.isnan(score_f) or score_f < min_conf:
+                        continue
+                    kept.append(detected_text)
 
                 if not kept:
                     continue

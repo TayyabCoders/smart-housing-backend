@@ -5,30 +5,31 @@ import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import cv2
 import numpy as np
 import structlog
-from ultralytics import YOLO
 
-from app.utils.ocr_util import get_ocr
+if TYPE_CHECKING:
+    from ultralytics import YOLO
 
 _logger = structlog.get_logger(__name__)
 
-_yolo_model: Optional[YOLO] = None
+_yolo_model: Optional["YOLO"] = None
 
 
-def _get_yolo(weights_path: str) -> YOLO:
+def _get_yolo(weights_path: str) -> "YOLO":
     global _yolo_model
     if _yolo_model is None:
+        from ultralytics import YOLO  # lazy import — avoids heavy load at startup
         _logger.info("video.yolo.load", weights=weights_path)
         _yolo_model = YOLO(weights_path)
     return _yolo_model
 
 
 def _extract_plate_text(image_bgr: np.ndarray, debug_dir: Path = None) -> str:
-    ocr = get_ocr()
+    from app.utils.ocr_util import run_ocr  # lazy import
     debug_dir = debug_dir or Path("uploads/output_debug")
     debug_dir.mkdir(parents=True, exist_ok=True)
     ts = int(datetime.now(timezone.utc).timestamp() * 1000)
@@ -65,40 +66,39 @@ def _extract_plate_text(image_bgr: np.ndarray, debug_dir: Path = None) -> str:
     processed = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
     cv2.imwrite(str(debug_dir / f"{ts}_7_processed.jpg"), processed)
 
-    result = ocr.predict(processed)
+    ocr_items = run_ocr(processed)
 
     plate_code = ""
     plate_digits = ""
 
-    for r in result:
-        rec_texts = r.get("rec_texts", [])
-        rec_scores = r.get("rec_scores", [])
+    rec_texts: list[str] = [t for t, _ in ocr_items]
+    rec_scores: list[float] = [s for _, s in ocr_items]
 
-        if len(rec_texts) == 1:
-            raw = str(rec_texts[0]).upper()
-            cleaned = re.sub(r"[^A-Z0-9]", "", raw)
-            if re.match(r"^[A-Z]{2,3}[0-9]{3,4}$", cleaned):
-                return cleaned
+    if len(rec_texts) == 1:
+        raw = rec_texts[0].upper()
+        cleaned = re.sub(r"[^A-Z0-9]", "", raw)
+        if re.match(r"^[A-Z]{2,3}[0-9]{3,4}$", cleaned):
+            return cleaned
 
-        for text, score in zip(rec_texts, rec_scores):
-            if score is None or np.isnan(score) or float(score) < 0.40:
-                continue
-            raw = str(text).upper()
-            cleaned = re.sub(r"[^A-Z0-9]", "", raw)
+    for text, score in zip(rec_texts, rec_scores):
+        if np.isnan(score) or score < 0.40:
+            continue
+        raw = text.upper()
+        cleaned = re.sub(r"[^A-Z0-9]", "", raw)
 
-            if re.match(r"^[A-Z]{2,3}$", cleaned):
-                plate_code = cleaned
-                continue
-            if re.match(r"^[0-9]{3,4}$", cleaned):
-                plate_digits = cleaned
-                continue
-            m = re.match(r"^([A-Z]{2,3})([0-9]{1,4})$", cleaned)
-            if m:
-                letters, digits = m.groups()
-                if len(letters) >= 2:
-                    plate_code = letters
-                if len(digits) >= 3:
-                    plate_digits = digits
+        if re.match(r"^[A-Z]{2,3}$", cleaned):
+            plate_code = cleaned
+            continue
+        if re.match(r"^[0-9]{3,4}$", cleaned):
+            plate_digits = cleaned
+            continue
+        m = re.match(r"^([A-Z]{2,3})([0-9]{1,4})$", cleaned)
+        if m:
+            letters, digits = m.groups()
+            if len(letters) >= 2:
+                plate_code = letters
+            if len(digits) >= 3:
+                plate_digits = digits
 
     return plate_code + plate_digits
 

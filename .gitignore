@@ -17,6 +17,7 @@ env/
 .vscode/
 .idea/
 
+uploads/
 # OS
 .DS_Store
 
