@@ -9,6 +9,7 @@ from app.configs.app_config import settings
 from app.edge.http.controller.parking_controller import ParkingController
 from app.schemas.parking_schema import (
     AllRecordsResponse,
+    DetectResponse,
     EntryResponse,
     ExitResponse,
     StatusResponse,
@@ -28,6 +29,29 @@ def _to_public_url(path: Optional[str], request: Request) -> Optional[str]:
         return None
     rel = str(path).replace("\\", "/").lstrip("/")
     return f"{str(request.base_url).rstrip('/')}/{rel}"
+
+
+@router.post("/detect", response_model=DetectResponse)
+@inject
+async def detect_plate(
+    request: Request,
+    image_file: UploadFile = File(...),
+    controller: ParkingController = Depends(Provide["parking_controller"]),
+):
+    image_bytes = await image_file.read()
+    suffix = Path(image_file.filename or "image.jpg").suffix or ".jpg"
+    result = await controller.detect_plate(
+        image_file_bytes=image_bytes,
+        image_file_suffix=suffix,
+        upload_dir=_upload_dir(),
+    )
+    return DetectResponse(
+        detected=result["detected"],
+        plate_number=result.get("plate_number"),
+        confidence=result.get("confidence"),
+        snapshot_url=_to_public_url(result.get("snapshot_path"), request),
+        message=result["message"],
+    )
 
 
 @router.post("/entry", response_model=EntryResponse, status_code=status.HTTP_201_CREATED)

@@ -4,9 +4,17 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
+class DetectResponse(BaseModel):
+    detected: bool
+    plate_number: Optional[str] = None
+    confidence: Optional[float] = None
+    snapshot_url: Optional[str] = None
+    message: str
+
+
 class EntryResponse(BaseModel):
     plate_number: str
-    cnic_number: str
+    cnic_number: Optional[str] = None
     entry_image_url: Optional[str] = None
     entry_time: datetime
     status: Literal["IN"]

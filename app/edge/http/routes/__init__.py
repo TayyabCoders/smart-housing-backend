@@ -1,9 +1,16 @@
 # Endpoints package
 import importlib
+import os
 import pkgutil
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 def register_routes(app: FastAPI):
+    # Serve uploads directory so snapshot images are accessible via URL
+    uploads_path = "uploads"
+    os.makedirs(uploads_path, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
+
     package_name = __name__  # app.edge.http.routes
     package = importlib.import_module(package_name)
 

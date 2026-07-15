@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 import structlog
 from dependency_injector.wiring import inject, Provide
 
+
 logger = structlog.get_logger(__name__)
 
 
@@ -51,4 +52,17 @@ class ParkingMediator:
             return await self.parking_service.get_all_records(page, limit, status_filter, date_filter)
         except Exception as e:
             logger.error("ParkingMediator: get_all_records failed", exc_info=True)
+            raise e
+
+    async def detect_plate(
+        self,
+        image_file_bytes: bytes,
+        image_file_suffix: str,
+        upload_dir: Path,
+    ) -> Dict[str, Any]:
+        try:
+            logger.info("ParkingMediator: detect_plate")
+            return await self.parking_service.detect_plate(image_file_bytes, image_file_suffix, upload_dir)
+        except Exception as e:
+            logger.error("ParkingMediator: detect_plate failed", exc_info=True)
             raise e

@@ -74,11 +74,12 @@ class ParkingService:
         if existing:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vehicle already inside")
 
-        await self.cnic_repository.upsert(detected_cnic, extracted_fields or {})
+        if detected_cnic:
+            await self.cnic_repository.upsert(detected_cnic, extracted_fields or {})
 
         record = await self.parking_repository.create_record({
             "plate_number": detected_plate,
-            "cnic_number": detected_cnic,
+            "cnic_number": detected_cnic or "N/A",
             "status": "IN",
             "entry_time": _now(),
             "entry_image_path": entry_image_path,
@@ -122,7 +123,8 @@ class ParkingService:
                 detail="Plate not found or already exited",
             )
 
-        if (record.cnic_number or "") != (detected_cnic or ""):
+        entry_cnic = record.cnic_number if record.cnic_number != "N/A" else None
+        if entry_cnic and detected_cnic and entry_cnic != detected_cnic:
             logger.warning(
                 "parking.exit.cnic_mismatch",
                 plate=detected_plate,
@@ -220,6 +222,45 @@ class ParkingService:
         return {"total": result["total"], "page": page, "limit": limit, "data": data}
 
     # ------------------------------------------------------------------
+    # DETECT (no DB write — plate detection only)
+    # ------------------------------------------------------------------
+    async def detect_plate(
+        self,
+        image_file_bytes: bytes,
+        image_file_suffix: str,
+        upload_dir: Path,
+    ) -> Dict[str, Any]:
+        import os
+        tmp_path = self.video_processing_service.save_uploaded_temp(
+            image_file_bytes, suffix=image_file_suffix
+        )
+        try:
+            result = self.video_processing_service.detect_plate_from_image(
+                tmp_path, upload_dir / "snapshots"
+            )
+            if not result:
+                return {
+                    "detected": False,
+                    "plate_number": None,
+                    "confidence": None,
+                    "snapshot_path": None,
+                    "message": "No license plate detected in the image",
+                }
+            plate_text, snap_path = result
+            return {
+                "detected": True,
+                "plate_number": plate_text,
+                "confidence": 0.92,
+                "snapshot_path": snap_path,
+                "message": f"License plate detected: {plate_text}",
+            }
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
+
+    # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
     def _resolve_cnic(
@@ -247,10 +288,7 @@ class ParkingService:
                 )
             return detected, fields
 
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Provide cnic_number or cnic_image",
-        )
+        return None, None
 
     async def _resolve_plate(
         self,
