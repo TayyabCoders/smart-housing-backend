@@ -51,6 +51,10 @@ async def detect_plate(
         confidence=result.get("confidence"),
         snapshot_url=_to_public_url(result.get("snapshot_path"), request),
         message=result["message"],
+        resident_status=result.get("resident_status"),
+        owner_name=result.get("owner_name"),
+        flat_number=result.get("flat_number"),
+        vehicle_type=result.get("vehicle_type"),
     )
 
 

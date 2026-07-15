@@ -10,6 +10,11 @@ class DetectResponse(BaseModel):
     confidence: Optional[float] = None
     snapshot_url: Optional[str] = None
     message: str
+    # Vehicle registry lookup result
+    resident_status: Optional[str] = None  # resident | visitor | staff | blacklist | unknown
+    owner_name: Optional[str] = None
+    flat_number: Optional[str] = None
+    vehicle_type: Optional[str] = None
 
 
 class EntryResponse(BaseModel):

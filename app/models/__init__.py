@@ -18,6 +18,7 @@ from app.models.activity_log import ActivityLog
 from app.models.chat import Message, Conversation
 from app.models.parking_record_model import ParkingRecord
 from app.models.cnic_record_model import CnicRecord
+from app.models.access_log import AccessLog
 
 
 async def initialize_models(database: Any) -> None:
@@ -55,5 +56,6 @@ __all__ = [
     "Conversation",
     "ParkingRecord",
     "CnicRecord",
+    "AccessLog",
     "initialize_models",
 ]

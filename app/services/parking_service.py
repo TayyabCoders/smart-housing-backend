@@ -35,12 +35,14 @@ class ParkingService:
         cnic_repository=Provide["cnic_repository"],
         video_processing_service=Provide["video_processing_service"],
         cnic_ocr_service=Provide["cnic_ocr_service"],
+        vehicle_repository=Provide["vehicle_repository"],
         prometheus=Provide["prometheus"],
     ):
         self.parking_repository = parking_repository
         self.cnic_repository = cnic_repository
         self.video_processing_service = video_processing_service
         self.cnic_ocr_service = cnic_ocr_service
+        self.vehicle_repository = vehicle_repository
         self.prometheus = prometheus
 
     # ------------------------------------------------------------------
@@ -244,16 +246,43 @@ class ParkingService:
                     "plate_number": None,
                     "confidence": None,
                     "snapshot_path": None,
+                    "resident_status": None,
+                    "owner_name": None,
+                    "flat_number": None,
+                    "vehicle_type": None,
                     "message": "No license plate detected in the image",
                 }
+
             plate_text, snap_path = result
-            return {
-                "detected": True,
-                "plate_number": plate_text,
-                "confidence": 0.92,
-                "snapshot_path": snap_path,
-                "message": f"License plate detected: {plate_text}",
-            }
+
+            # Check if plate is in the registered vehicles database
+            registered = await self.vehicle_repository.find_by_plate(plate_text)
+
+            if registered:
+                status_val = registered.status.value if hasattr(registered.status, "value") else str(registered.status)
+                return {
+                    "detected": True,
+                    "plate_number": plate_text,
+                    "confidence": 0.92,
+                    "snapshot_path": snap_path,
+                    "resident_status": status_val,
+                    "owner_name": registered.owner_name,
+                    "flat_number": registered.flat_no,
+                    "vehicle_type": registered.vehicle_type,
+                    "message": f"{status_val.title()} vehicle: {plate_text}",
+                }
+            else:
+                return {
+                    "detected": True,
+                    "plate_number": plate_text,
+                    "confidence": 0.92,
+                    "snapshot_path": snap_path,
+                    "resident_status": "unknown",
+                    "owner_name": None,
+                    "flat_number": None,
+                    "vehicle_type": None,
+                    "message": f"Unknown vehicle detected: {plate_text}",
+                }
         finally:
             try:
                 os.unlink(tmp_path)
