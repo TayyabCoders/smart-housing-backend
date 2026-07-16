@@ -33,6 +33,21 @@ class Election(ElectionBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+class ElectionListItem(BaseModel):
+    id: UUID
+    title: str
+    society_name: str
+    society_location: str
+    election_date: datetime
+    is_active: bool
+    total_eligible_voters: int
+    total_candidates: int
+    total_votes: int
+    status: str  # "upcoming" | "active" | "closed"
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 class ElectionStatusResponse(BaseModel):
     id: UUID
     title: str

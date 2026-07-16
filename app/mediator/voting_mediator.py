@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from app.di.container import container
 from dependency_injector.wiring import inject, Provide
 from structlog import get_logger
@@ -18,100 +20,111 @@ class VotingMediator:
         self.vote_service = vote_service
         self.activity_log_service = activity_log_service
 
+    # ─── PUBLIC ──────────────────────────────────────────────────────────────
+
     async def get_candidates(self):
         try:
-            logger.info("VotingMediator: Getting candidates...")
-            
-            result = await self.candidate_service.get_candidates()
-            
-            logger.info("VotingMediator: Got candidates successfully.")
-            
-            return result
-        
+            return await self.candidate_service.get_candidates()
         except Exception as e:
             logger.error("VotingMediator: Failed to get candidates.", exc_info=True)
             raise e
 
     async def submit_vote(self, vote_data):
         try:
-            logger.info("VotingMediator: Submitting vote...")
-            
-            result = await self.vote_service.submit_vote(vote_data)
-            
-            logger.info("VotingMediator: Vote submitted successfully.")
-            
-            return result
-        
+            return await self.vote_service.submit_vote(vote_data)
         except Exception as e:
             logger.error("VotingMediator: Failed to submit vote.", exc_info=True)
             raise e
 
     async def get_results(self):
         try:
-            logger.info("VotingMediator: Getting results...")
-            
-            result = await self.candidate_service.get_results()
-            
-            logger.info("VotingMediator: Got results successfully.")
-            
-            return result
-        
+            return await self.candidate_service.get_results()
         except Exception as e:
             logger.error("VotingMediator: Failed to get results.", exc_info=True)
             raise e
 
     async def get_activity_log(self, limit: int = 15):
         try:
-            logger.info("VotingMediator: Getting activity log...")
-            
-            result = await self.activity_log_service.get_activity_log(limit)
-            
-            logger.info("VotingMediator: Got activity log successfully.")
-            
-            return result
-        
+            return await self.activity_log_service.get_activity_log(limit)
         except Exception as e:
             logger.error("VotingMediator: Failed to get activity log.", exc_info=True)
             raise e
 
     async def get_election_status(self):
         try:
-            logger.info("VotingMediator: Getting election status...")
-            
-            result = await self.election_service.get_election_status()
-            
-            logger.info("VotingMediator: Got election status successfully.")
-            
-            return result
-        
+            return await self.election_service.get_election_status()
         except Exception as e:
             logger.error("VotingMediator: Failed to get election status.", exc_info=True)
             raise e
 
     async def get_election_rules(self):
         try:
-            logger.info("VotingMediator: Getting election rules...")
-            
-            result = await self.election_service.get_election_rules()
-            
-            logger.info("VotingMediator: Got election rules successfully.")
-            
-            return result
-        
+            return await self.election_service.get_election_rules()
         except Exception as e:
             logger.error("VotingMediator: Failed to get election rules.", exc_info=True)
             raise e
 
     async def get_election_committee(self):
         try:
-            logger.info("VotingMediator: Getting election committee...")
-            
-            result = await self.election_service.get_election_committee()
-            
-            logger.info("VotingMediator: Got election committee successfully.")
-            
-            return result
-        
+            return await self.election_service.get_election_committee()
         except Exception as e:
             logger.error("VotingMediator: Failed to get election committee.", exc_info=True)
+            raise e
+
+    # ─── ADMIN ───────────────────────────────────────────────────────────────
+
+    async def create_election(self, data):
+        try:
+            return await self.election_service.create_election(data)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to create election.", exc_info=True)
+            raise e
+
+    async def list_elections(self):
+        try:
+            return await self.election_service.list_elections()
+        except Exception as e:
+            logger.error("VotingMediator: Failed to list elections.", exc_info=True)
+            raise e
+
+    async def update_election(self, election_id: UUID, data):
+        try:
+            return await self.election_service.update_election(election_id, data)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to update election.", exc_info=True)
+            raise e
+
+    async def delete_election(self, election_id: UUID):
+        try:
+            return await self.election_service.delete_election(election_id)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to delete election.", exc_info=True)
+            raise e
+
+    async def create_candidate(self, data):
+        try:
+            return await self.candidate_service.create_candidate(data)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to create candidate.", exc_info=True)
+            raise e
+
+    async def update_candidate(self, candidate_id: UUID, data):
+        try:
+            return await self.candidate_service.update_candidate(candidate_id, data)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to update candidate.", exc_info=True)
+            raise e
+
+    async def delete_candidate(self, candidate_id: UUID):
+        try:
+            return await self.candidate_service.delete_candidate(candidate_id)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to delete candidate.", exc_info=True)
+            raise e
+
+    async def get_candidates_by_election(self, election_id: UUID):
+        try:
+            return await self.candidate_service.get_candidates_by_election(election_id)
+        except Exception as e:
+            logger.error("VotingMediator: Failed to get candidates by election.", exc_info=True)
             raise e
