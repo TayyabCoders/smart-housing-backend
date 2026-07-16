@@ -65,6 +65,27 @@ class UserController:
             logger.error("UserController: Failed to update user.", exc_info=True)
             raise e
 
+    async def get_profile(self, current_user_id):
+        try:
+            return await self.user_mediator.get_profile(current_user_id)
+        except Exception as e:
+            logger.error("UserController: Failed to get profile.", exc_info=True)
+            raise e
+
+    async def update_profile(self, current_user_id, data):
+        try:
+            return await self.user_mediator.update_profile(current_user_id, data)
+        except Exception as e:
+            logger.error("UserController: Failed to update profile.", exc_info=True)
+            raise e
+
+    async def change_password(self, current_user_id, data):
+        try:
+            return await self.user_mediator.change_password(current_user_id, data)
+        except Exception as e:
+            logger.error("UserController: Failed to change password.", exc_info=True)
+            raise e
+
     async def delete_user(self, user_id: str):
         try:
             logger.info("UserController: Deleting user...")

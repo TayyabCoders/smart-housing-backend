@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 
-from app.schemas.user_schema import UserCreate, UserUpdate, User
+from app.schemas.user_schema import UserCreate, UserUpdate, User, ProfileUpdate, ChangePasswordRequest
 from app.di.container import container
 import structlog
 from dependency_injector.wiring import inject, Provide
@@ -155,6 +155,71 @@ class UserService:
             raise
         except Exception as e:
             logger.error("UserService: Failed to update user.", exc_info=True)
+            raise e
+
+    async def get_profile(self, current_user_id) -> Any:
+        try:
+            logger.info("UserService: Getting profile...")
+            user = await self.user_repository.findById(current_user_id)
+            if not user:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            return {"success": True, "data": User.model_validate(user).model_dump()}
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error("UserService: Failed to get profile.", exc_info=True)
+            raise e
+
+    async def update_profile(self, current_user_id, data: ProfileUpdate) -> Any:
+        try:
+            logger.info("UserService: Updating profile...")
+            update_data = data.model_dump(exclude_unset=True)
+
+            if "username" in update_data:
+                existing = await self.user_repository.findByUsername(update_data["username"])
+                if existing and str(existing.id) != str(current_user_id):
+                    raise HTTPException(status_code=400, detail="Username already taken")
+
+            if "email" in update_data:
+                existing = await self.user_repository.findByEmail(update_data["email"])
+                if existing and str(existing.id) != str(current_user_id):
+                    raise HTTPException(status_code=400, detail="Email already in use")
+
+            user = await self.user_repository.update(current_user_id, update_data)
+            self.prometheus.record_business_event("profile_update", "success")
+            return {"success": True, "data": User.model_validate(user).model_dump()}
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error("UserService: Failed to update profile.", exc_info=True)
+            raise e
+
+    async def change_password(self, current_user_id, data: ChangePasswordRequest) -> Dict[str, Any]:
+        try:
+            logger.info("UserService: Changing password...")
+
+            if data.new_password != data.confirm_password:
+                raise HTTPException(status_code=400, detail="New passwords do not match")
+
+            if len(data.new_password) < 8:
+                raise HTTPException(status_code=400, detail="New password must be at least 8 characters")
+
+            user = await self.user_repository.findById(current_user_id)
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            if not self.security_util.verify_password(data.old_password, user.hashed_password):
+                raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+            new_hashed = self.security_util.get_password_hash(data.new_password)
+            await self.user_repository.update(current_user_id, {"hashed_password": new_hashed})
+
+            self.prometheus.record_business_event("password_change", "success")
+            return {"success": True, "message": "Password changed successfully"}
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error("UserService: Failed to change password.", exc_info=True)
             raise e
 
     async def delete_user(self, user_id: str) -> Dict[str, Any]:

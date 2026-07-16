@@ -53,6 +53,22 @@ class User(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+class ProfileUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[Gender] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    zip_code: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+    confirm_password: str
+
 class PasswordResetToken(BaseModel):
     user_id: str
     token: str
