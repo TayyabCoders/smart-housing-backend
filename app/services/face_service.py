@@ -46,6 +46,8 @@ class FaceService:
             face = max(faces, key=lambda f: f["confidence"])
             match = await self.face_repository.find_closest_person(face["embedding"])
 
+            await self.face_repository.ensure_camera_exists(camera_id)
+
             upload_result = await self.upload_service.upload_image(file)
             image_url = upload_result["url"]
 

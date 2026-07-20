@@ -8,7 +8,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.orm import selectinload
 
 from app.models.camera import Camera
-from app.models.enums import DetectionStatus
+from app.models.enums import CameraType, DetectionStatus
 from app.models.face_detection import FaceDetection
 from app.models.face_embedding import FaceEmbedding
 from app.models.person import Person
@@ -159,6 +159,32 @@ class FaceRepository(BaseRepository):
                 }
         except Exception as e:
             logger.error("FaceRepository: get_stats failed", exc_info=True)
+            raise e
+
+    async def ensure_camera_exists(self, camera_id: UUID) -> Camera:
+        """Upsert a camera row by UUID so FK constraints don't fail during development."""
+        try:
+            async with self.database.get_session("read") as session:
+                result = await session.execute(select(Camera).where(Camera.id == camera_id))
+                camera = result.scalar_one_or_none()
+                if camera:
+                    return camera
+
+            short = str(camera_id)[:8].upper()
+            async with self.database.get_session("write") as session:
+                camera = Camera(
+                    id=camera_id,
+                    code=f"CAM-{short}",
+                    name=f"Gate Camera {short}",
+                    type=CameraType.BOTH,
+                    is_active=True,
+                )
+                session.add(camera)
+                await session.commit()
+                await session.refresh(camera)
+                return camera
+        except Exception as e:
+            logger.error("FaceRepository: ensure_camera_exists failed", exc_info=True)
             raise e
 
     async def update_action(
