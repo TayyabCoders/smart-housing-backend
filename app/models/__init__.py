@@ -11,6 +11,7 @@ from app.models.face_detection import FaceDetection
 from app.models.alert import Alert
 from app.models.visitor_approval import VisitorApproval
 from app.models.complaint_model import Complaint
+from app.models.announcement_model import Announcement
 from app.models.election import Election
 from app.models.candidate import Candidate
 from app.models.vote import Vote
@@ -48,6 +49,7 @@ __all__ = [
     "Alert",
     "VisitorApproval",
     "Complaint",
+    "Announcement",
     "Election",
     "Candidate",
     "Vote",
